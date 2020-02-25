@@ -240,6 +240,12 @@ version = '2.0.0'
 package = "pallet-poa"
 path = "../pallets/poa"
 
+[dependencies.price-oracle]
+default-features = false
+version = '2.0.0'
+package = "pallet-price-oracle"
+path = "../pallets/price-oracle"
+
 [dependencies.reserve]
 default-features = false
 version = '2.0.0'
@@ -294,6 +300,7 @@ std = [
 
     'allocations/std',
     'poa/std',
+    'price-oracle/std',
     'reserve/std',
 
     'mandate/std',

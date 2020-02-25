@@ -169,6 +169,7 @@ version = '2.0.0'
 members = [
 	'pallets/allocations',
 	'pallets/poa',
+	'pallets/price-oracle',
 	'pallets/reserve',
 	'runtime'
 ]
