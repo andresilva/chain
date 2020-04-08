@@ -268,10 +268,15 @@ impl transaction_payment::Trait for Runtime {
     type FeeMultiplierUpdate = TargetedFeeAdjustment<TargetBlockFullness, Self>;
 }
 
+parameter_types! {
+    pub const MinVestedTransfer: Balance = 1 * constants::DOLLARS;
+}
+
 impl vesting::Trait for Runtime {
     type Event = Event;
     type Currency = Balances;
     type BlockNumberToBalance = ConvertInto;
+    type MinVestedTransfer = MinVestedTransfer;
 }
 
 parameter_types! {
@@ -317,6 +322,7 @@ impl membership::Trait<membership::Instance3> for Runtime {
         collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type SwapOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type ResetOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
+    type PrimeOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type MembershipInitialized = PoaSessions;
     type MembershipChanged = PoaSessions;
 }
@@ -330,8 +336,13 @@ impl membership::Trait<membership::Instance1> for Runtime {
         collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type SwapOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type ResetOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
+    type PrimeOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type MembershipInitialized = TechnicalCommittee;
     type MembershipChanged = TechnicalCommittee;
+}
+
+parameter_types! {
+    pub const MotionDuration: BlockNumber = 2 * constants::DAYS;
 }
 
 type TechnicalCollective = collective::Instance2;
@@ -339,6 +350,7 @@ impl collective::Trait<TechnicalCollective> for Runtime {
     type Origin = Origin;
     type Proposal = Call;
     type Event = Event;
+    type MotionDuration = MotionDuration;
 }
 
 impl membership::Trait<membership::Instance2> for Runtime {
@@ -348,6 +360,7 @@ impl membership::Trait<membership::Instance2> for Runtime {
         collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type SwapOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type ResetOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
+    type PrimeOrigin = collective::EnsureProportionMoreThan<_1, _2, AccountId, TechnicalCollective>;
     type MembershipInitialized = Allocations;
     type MembershipChanged = Allocations;
 }
@@ -483,10 +496,6 @@ sp_api::impl_runtime_apis! {
     impl sp_block_builder::BlockBuilder<Block> for Runtime {
         fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
             Executive::apply_extrinsic(extrinsic)
-        }
-
-        fn apply_trusted_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
-            Executive::apply_trusted_extrinsic(extrinsic)
         }
 
         fn finalize_block() -> <Block as BlockT>::Header {
